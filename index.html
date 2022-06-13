@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Github Pages</title>
+    <meta name="description" content="Just a github page" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <noscript>Javascript is not suppoerted</noscript>
+    <script>
+      $.getJSON(
+        "https://nestjs-airtable.herokuapp.com/users/recGhtuqR4fh9mvZQ",
+        /**
+         * @typedef {{ avatar: string, name: string }} Company
+         * @typedef {{ id: string, description: string, position: string, start: string, end: string | null, company: Company }} Experience
+         * @typedef {{
+         *    id: string,
+         *    experiences: string[],
+         *    experienceObjects: Experience[],
+         *    location: string,
+         *    name: string,
+         *    username: string,
+         *    role: string,
+         *    avatar: string
+         * }} User
+         * @param {User} data
+         */
+        (data, status, xhr) => {
+          const preElement = $("<pre></pre>").append(
+            JSON.stringify(data, null, 2)
+          );
+          $("body").append(preElement);
+        }
+      );
+    </script>
+  </body>
+</html>
