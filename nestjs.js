@@ -10,7 +10,8 @@
  *    username: string,
  *    role: string,
  *    avatar: string,
- *    about: string
+ *    about: string,
+ *    connections: number
  * }} User
  */
 
@@ -39,6 +40,7 @@ const formatDate = (date) => {
   }
   return "Present";
 };
+
 const getUser = () => {
   $.getJSON(
     "https://nestjs-airtable.herokuapp.com/users/recGhtuqR4fh9mvZQ",
@@ -49,12 +51,14 @@ const getUser = () => {
       //   const preElement = $("<pre></pre>").append(JSON.stringify(data, null, 2));
       //   $("body").append(preElement);
 
-      const aboutElement = $("<p></p>").text(data.about);
-      $("#about-section").append(aboutElement);
+      $("#user-avatar").attr("src", data.avatar);
+      $("#user-name").text(data.name);
+      $("#user-role").text(`${data.role} · ${data.connections}`);
+      $("#user-location").text(data.location);
+      $("#about-section").append($("<p></p>").text(data.about));
 
       const experienceSection = $("#experience-section");
       data.experienceObjects.forEach((exp) => {
-        console.log(formatDate(exp.end));
         experienceSection.append(
           $(`<div role="listitem" class="w-dyn-item">
             <div class="education__card">
