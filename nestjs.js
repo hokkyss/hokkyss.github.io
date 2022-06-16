@@ -53,8 +53,10 @@ const getUser = () => {
 
       $("#user-avatar").attr("src", data.avatar);
       $("#user-name").text(data.name);
-      $("#user-role").text(`${data.role} · ${data.connections}`);
-      $("#user-location").text(data.location);
+      $("#user-role").text(data.role);
+      $("#user-location").text(
+        `${data.location} · ${data.connections} connections`
+      );
       $("#about-section").append($("<p></p>").text(data.about));
 
       const experienceSection = $("#experience-section");
