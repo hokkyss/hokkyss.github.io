@@ -1,17 +1,37 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/9.8.3/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDjwArp-f8FLukF9dX2dp596Z5Dx4lm2M8",
+  authDomain: "nestjs-firebase-cdf2d.firebaseapp.com",
+  databaseURL:
+    "https://nestjs-firebase-cdf2d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nestjs-firebase-cdf2d",
+  storageBucket: "nestjs-firebase-cdf2d.appspot.com",
+  messagingSenderId: "499694483726",
+  appId: "1:499694483726:web:3ad97f84cde7dae76aff5f",
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
 /**
  * @typedef {{ id: string, avatar: string, name: string }} Company
  * @typedef {{ id: string, description: string, position: string, start: string, end: string | null, company: Company }} Experience
  * @typedef {{
- *    id: string,
- *    experiences: string[],
- *    experienceObjects: Experience[],
+ *    about: string,
+ *    avatar: string,
+ *    connections: number
  *    location: string,
  *    name: string,
- *    username: string,
  *    role: string,
- *    avatar: string,
- *    about: string,
- *    connections: number
+ *    uid: string,
+ *    username: string,
  * }} User
  */
 
@@ -41,13 +61,16 @@ const formatDate = (date) => {
   return "Present";
 };
 
-const getUser = () => {
-  $.getJSON(
-    "https://nestjs-airtable.herokuapp.com/users/recGhtuqR4fh9mvZQ",
+const getUser = (idToken) => {
+  $.ajax({
+    url: "https://nestjs-airtable.herokuapp.com/firebase/user",
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
     /**
      * @param {User} data
      */
-    (data, status, xhr) => {
+    success: (data, status, xhr) => {
       $("#user-avatar").attr("src", data.avatar);
       $("#user-name").text(data.name);
       $("#user-role").text(data.role);
@@ -55,9 +78,23 @@ const getUser = () => {
         `${data.location} · ${data.connections} connections`
       );
       $("#about-section").append($("<p></p>").text(data.about));
+    },
+  });
+};
 
+const getExperience = (idToken) => {
+  $.ajax({
+    url: "https://nestjs-airtable.herokuapp.com/firebase/user/experiences",
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+    /**
+     * @param {Experience[]} data
+     */
+    success: (data, status, xhr) => {
       const experienceSection = $("#experience-section");
-      data.experienceObjects.forEach((exp) => {
+
+      data.forEach((exp) => {
         experienceSection.append(
           $(`<div role="listitem" class="w-dyn-item">
             <div class="education__card">
@@ -87,8 +124,22 @@ const getUser = () => {
           </div>`)
         );
       });
-    }
-  );
+    },
+  });
 };
 
-getUser();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    user.getIdToken().then((idToken) => {
+      getUser(idToken);
+      getExperience(idToken);
+    });
+  } else {
+    document.location.href = "/login";
+  }
+});
+
+$("#app__logout").on("click", async (ev) => {
+  await signOut(auth);
+  document.location.href = "/login";
+});
