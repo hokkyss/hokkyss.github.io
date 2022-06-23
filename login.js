@@ -25,12 +25,12 @@ const password = $("#login__password");
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log(user);
     document.location.href = "/firebase";
   }
 });
 
 $("#login__form").on("submit", (ev) => {
+  ev.preventDefault();
   login();
 });
 const login = async () => {

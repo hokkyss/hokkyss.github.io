@@ -68,9 +68,6 @@ const getData = () => {
       );
       $("#about-section").append($("<p></p>").text(data.fields.about));
 
-      console.log(
-        data.fields.experiences.map((e) => `{id} = "${e}"`).join(", ")
-      );
       const experienceSection = $("#experience-section");
       // const OR_CONDITION = `OR(${data.fields.experiences
       //   .map((e) => `{id} = "${e}"`)
@@ -117,8 +114,6 @@ const getData = () => {
           }
         )
       );
-
-      console.log(data);
     }
   );
 };
