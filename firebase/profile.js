@@ -153,10 +153,19 @@ const logoutButtonSelector = $("<button></button>")
     document.location.href = "/firebase/login";
   });
 
+const editAboutButtonSelector = $("<button></button>")
+  .attr("id", "edit__about__button")
+  .text("Edit About")
+  .on("click", (ev) => {
+    document.location.href = `/firebase/edit-about?user=${auth.currentUser.uid}`;
+  });
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     $("#app__nav__items").append(logoutButtonSelector);
+    $("#about-section").append(editAboutButtonSelector);
   } else {
     $("#app__nav__items").remove(logoutButtonSelector);
+    $("#about-section").remove(editAboutButtonSelector);
   }
 });
