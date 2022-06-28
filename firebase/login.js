@@ -25,7 +25,7 @@ const password = $("#login__password");
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    document.location.href = "/firebase";
+    document.location.href = "/firebase/profile";
   }
 });
 

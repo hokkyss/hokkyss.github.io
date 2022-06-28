@@ -61,12 +61,9 @@ const formatDate = (date) => {
   return "Present";
 };
 
-const getUser = (idToken) => {
+const getUser = (uid) => {
   $.ajax({
-    url: "https://nestjs-airtable.herokuapp.com/firebase/user",
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-    },
+    url: `https://nestjs-airtable.herokuapp.com/firebase/users/${uid}`,
     /**
      * @param {User} data
      */
@@ -82,12 +79,9 @@ const getUser = (idToken) => {
   });
 };
 
-const getExperience = (idToken) => {
+const getExperience = (uid) => {
   $.ajax({
-    url: "https://nestjs-airtable.herokuapp.com/firebase/user/experiences",
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-    },
+    url: `https://nestjs-airtable.herokuapp.com/firebase/users/${uid}/experiences`,
     /**
      * @param {Experience[]} data
      */
@@ -128,18 +122,41 @@ const getExperience = (idToken) => {
   });
 };
 
+let search = document.location.search;
+if (search[0] === "?") {
+  search = search.slice(1);
+}
+const queries = search.split("&");
+/**
+ * @type {Record<string, string>}
+ */
+const searchQuery = {};
+for (var query of queries) {
+  const [key, value] = query.split("=");
+  searchQuery[key] = decodeURIComponent(value);
+}
+
+console.log(searchQuery);
+
+if (searchQuery["user"]) {
+  getUser(searchQuery["user"]);
+  getExperience(searchQuery["user"]);
+} else {
+  location.search = "user=7zieRJJ4tfZ3VsX9gLLRynrLdZY2";
+}
+
+const logoutButtonSelector = $("<button></button>")
+  .attr("id", "app__logout")
+  .text("Logout")
+  .on("click", async (ev) => {
+    await signOut(auth);
+    document.location.href = "/firebase/login";
+  });
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    user.getIdToken().then((idToken) => {
-      getUser(idToken);
-      getExperience(idToken);
-    });
+    $("#app__nav__items").append(logoutButtonSelector);
   } else {
-    document.location.href = "/login";
+    $("#app__nav__items").remove(logoutButtonSelector);
   }
-});
-
-$("#app__logout").on("click", async (ev) => {
-  await signOut(auth);
-  document.location.href = "/login";
 });
